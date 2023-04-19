@@ -31,41 +31,41 @@ const signUpUser = async (req, res)=>{
         }
         const hashedPassword = await hashingPassword(password)
 
-        const token = jwt.sign({ name, email, hashedPassword, image }, dev.jwtKey, {expiresIn: '1h'});
+         const token = jwt.sign({ name, email, hashedPassword, image }, dev.jwtKey, {expiresIn: '1h'});
 
-        const emailData = {
-            email,
-            subject: "Account Activation Email",
-            html: `
-            <h2> Hello ${name} . </h2>
-            <p> Please click <a href="${dev.clientUrl}/user/activate/${token}">here</a> to  activate your account </p>     
-            `, // html body
-          };
+         const emailData = {
+             email,
+             subject: "Account Activation Email",
+             html: `
+             <h2> Hello ${name} . </h2>
+             <p> Please click <a href="${dev.clientUrl}/user/activate/${token}">here</a> to  activate your account </p>     
+             `, // html body
+           };
         
-        sendEmailWithNodeMailer(emailData)
+         sendEmailWithNodeMailer(emailData)
 
-        res.status(201).json({token, message: 'Please verify your email'})
+        res.status(200).json({token, message: 'Please verify your email'})
     }catch(e){
         res.status(500).json({message: e.message})
     }
 }
 
-const VerifyEmail = (req, res)=>{
-    try {
-        const {token} = req.body
-        if(!token){
-            return res.status(404).json({message: 'Token missing'})
-        }
-        jwt.verify(token, dev.jwtKey, function(err, decoded) {
-            if(err){
-                return res.status(401).json({message: 'Token expired'})
-            }
-            const {name, email, hashedPassword, image} = decoded
-          });
-        res.status(200).json({message: 'e-mail verified'})
-    } catch (e) {
-        res.status(500).json({message: e.message})
-    }
-}
+ const VerifyEmail = (req, res)=>{
+     try {
+         const {token} = req.body
+         if(!token){
+             return res.status(404).json({message: 'Token missing'})
+         }
+         jwt.verify(token, dev.jwtKey, function(err, decoded) {
+             if(err){
+                 return res.status(401).json({message: 'Token expired'})
+             }
+             const {name, email, hashedPassword, image} = decoded
+           });
+         res.status(200).json({message: 'e-mail verified'})
+     } catch (e) {
+         res.status(500).json({message: e.message})
+     }
+ }
 
 module.exports = {signUpUser, VerifyEmail}
