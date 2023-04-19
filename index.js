@@ -2,7 +2,7 @@ const express = require ('express')
 
 const dev = require('./config/config')
 const connectDB = require('./config/db')
-const userRouter = require('./routes')
+const userRouter = require('./routes/users')
 
 
 const app = express()
