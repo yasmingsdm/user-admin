@@ -10,11 +10,12 @@ const userSchema = new Schema({
         type: String, 
         required: [true, 'Please insert your email'],
         trim: true,
+        unique: true,
         lowercase: true, 
         validate:{
             validator: function(v){
                 return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(v)
-            }, 'Please insert a valid email'
+            }, message: 'Please enter a valide e-mail'
         }
     },
     password:{
@@ -22,9 +23,10 @@ const userSchema = new Schema({
         required: [true, 'Please insert your password'],
         minlength: [8, 'Your password must have at least 8 characteres']
     },
-    birthYear:{
+    birth_year:{
         type: Number, 
-        required:[true, 'Please insert your birth year']
+        required:[true, 'Please insert your birth year'],
+        min: [4, 'Please type 4 characters-year']
     },
     is_admin:{
         type: Number,
