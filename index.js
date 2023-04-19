@@ -10,7 +10,7 @@ app.get('/', (req,res)=>{
     res.status(200).json({message:'Testing'})
 })
 
-app.listen(port, ()=>{
+app.listen(port, async ()=>{
     console.log(`Running at http://localhost:${port}`)
-    connectDB()
+    await connectDB()
 })
