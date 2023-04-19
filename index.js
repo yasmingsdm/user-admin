@@ -1,5 +1,6 @@
 const express = require ('express')
 const dev = require('./config/config')
+const connectDB = require('./config/db')
 
 
 const app = express()
@@ -11,4 +12,5 @@ app.get('/', (req,res)=>{
 
 app.listen(port, ()=>{
     console.log(`Running at http://localhost:${port}`)
+    connectDB()
 })
