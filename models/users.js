@@ -23,11 +23,6 @@ const userSchema = new Schema({
         required: [true, 'Please insert your password'],
         minlength: [8, 'Your password must have at least 8 characteres']
     },
-    birth_year:{
-        type: Number, 
-        required:[true, 'Please insert your birth year'],
-        min: [4, 'Please type 4 characters-year']
-    },
     is_admin:{
         type: Number,
         default: 0
