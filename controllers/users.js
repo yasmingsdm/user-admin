@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
 
-const { hashingPassword } = require("../helpers/hashPassword")
+const { hashingPassword, comparePassword } = require("../helpers/hashPassword")
 const User = require("../models/users")
 const dev = require('../config/config')
 const { sendEmailWithNodeMailer } = require('../helpers/email')
@@ -51,7 +51,7 @@ const signUpUser = async (req, res)=>{
     }
 }
 
- const VerifyEmail = (req, res)=>{
+const VerifyEmail = (req, res)=>{
      try {
          const {token} = req.body
          if(!token){
@@ -65,7 +65,7 @@ const signUpUser = async (req, res)=>{
              const newUser = new User({
                 name, email, password: hashedPassword, image
              })
-            if(image){
+            if(image){ //it's not sending the image to the db
                 newUser.image.data = fs.readFileSync(image.path);
                 newUser.image.contentType = image.type 
             }
@@ -78,6 +78,40 @@ const signUpUser = async (req, res)=>{
      } catch (e) {
          res.status(500).json({message: e.message})
      }
- }
+}
 
-module.exports = {signUpUser, VerifyEmail}
+const loginUser = async (req, res)=>{
+    try {
+        const {email, password} = req.body
+        if(!email || !password){
+            return  res.status(404).json({message: 'Some information is missing'})
+        }
+        const alreadyAnUser = await User.findOne({email})
+        if(!alreadyAnUser){
+            return  res.status(400).json({message: 'Sign up first'})
+        }
+        const checkPassword = await comparePassword(password, alreadyAnUser.password)
+        if(!checkPassword){
+            res.status(400).json({message: 'Wrong password'})
+        }
+        res.status(200).json({
+            user:{
+                name: alreadyAnUser.name,
+                image: alreadyAnUser.image //it's empty
+            }, 
+            message: 'login ok'}) 
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+
+const logoutUser = (req, res)=>{
+    try {
+        res.status(200).json({message: 'logout ok'}) 
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+
+
+module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser}
