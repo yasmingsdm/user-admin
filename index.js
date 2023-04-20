@@ -1,4 +1,5 @@
 const express = require ('express')
+const cookieParser = require('cookie-parser')
 
 const dev = require('./config/config')
 const connectDB = require('./config/db')
@@ -8,6 +9,7 @@ const userRouter = require('./routes/users')
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({extended:false}))
+app.use(cookieParser())
 const port= dev.port
 
 app.use('/user', userRouter)
