@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const fs = require('fs')
 
 const { hashingPassword } = require("../helpers/hashPassword")
 const User = require("../models/users")
@@ -55,14 +56,28 @@ const signUpUser = async (req, res)=>{
          const {token} = req.body
          if(!token){
              return res.status(404).json({message: 'Token missing'})
-         }
-         jwt.verify(token, dev.jwtKey, function(err, decoded) {
+        }
+        jwt.verify(token, dev.jwtKey, async function(err, decoded) {
              if(err){
                  return res.status(401).json({message: 'Token expired'})
              }
              const {name, email, hashedPassword, image} = decoded
-           });
-         res.status(200).json({message: 'e-mail verified'})
+             const newUser = new User({
+                name, email, password: hashedPassword
+             })
+            if(image){
+                newUser.image.data = fs.readFileSync(image.path);
+                newUser.image.contentType = image.type 
+            }
+            const user = await newUser.save()
+            if(!user){
+                res.status(400).json({message: 'user was not created'}) 
+            }
+
+
+        });
+           
+         res.status(200).json({message: 'e-mail verified. user created'})
      } catch (e) {
          res.status(500).json({message: e.message})
      }
