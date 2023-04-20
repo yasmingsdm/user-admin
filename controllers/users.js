@@ -63,7 +63,7 @@ const signUpUser = async (req, res)=>{
              }
              const {name, email, hashedPassword, image} = decoded
              const newUser = new User({
-                name, email, password: hashedPassword
+                name, email, password: hashedPassword, image
              })
             if(image){
                 newUser.image.data = fs.readFileSync(image.path);
@@ -73,11 +73,8 @@ const signUpUser = async (req, res)=>{
             if(!user){
                 res.status(400).json({message: 'user was not created'}) 
             }
-
-
-        });
-           
-         res.status(200).json({message: 'e-mail verified. user created'})
+            res.status(201).json({message: 'e-mail verified. user created'})
+        });   
      } catch (e) {
          res.status(500).json({message: e.message})
      }
