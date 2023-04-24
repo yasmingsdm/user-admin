@@ -94,6 +94,7 @@ const loginUser = async (req, res)=>{
         if(!checkPassword){
             res.status(400).json({message: 'Wrong password'})
         }
+        req.session.userId = alreadyAnUser._id
         res.status(200).json({
             user:{
                 name: alreadyAnUser.name,
@@ -107,6 +108,8 @@ const loginUser = async (req, res)=>{
 
 const logoutUser = (req, res)=>{
     try {
+        req.session.destroy()
+        res.clearCookie('user session')
         res.status(200).json({message: 'logout ok'}) 
     } catch (e) {
         res.status(500).json({message: e.message})

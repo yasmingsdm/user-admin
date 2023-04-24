@@ -7,6 +7,7 @@ const dev={
     smtpUsername: process.env.SMTP_USERNAME,
     smtpPassword: process.env.SMTP_PASSWORD,
     clientUrl: process.env.CLIENT_URL,
+    sessionKey: process.env.SESSION_KEY,
 }
 
 module.exports = dev
