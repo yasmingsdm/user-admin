@@ -1,4 +1,4 @@
-const { signUpUser, VerifyEmail, loginUser, logoutUser } = require('../controllers/users')
+const { signUpUser, VerifyEmail, loginUser, logoutUser, profile } = require('../controllers/users')
 const session = require('express-session')
 const formidable = require('express-formidable')
 const dev = require('../config/config')
@@ -17,5 +17,6 @@ router.use(session({
   router.post('/verify-email', VerifyEmail)
   router.post('/login', loggedout,  loginUser)
   router.get('/logout', loggedin, logoutUser)
+  router.get('/', profile)
 
  module.exports = router

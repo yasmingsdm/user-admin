@@ -95,6 +95,7 @@ const loginUser = async (req, res)=>{
             res.status(400).json({message: 'Wrong password'})
         }
         req.session.userId = alreadyAnUser._id
+        // console.log(req.session.userId)
         res.status(200).json({
             user:{
                 name: alreadyAnUser.name,
@@ -116,5 +117,13 @@ const logoutUser = (req, res)=>{
     }
 }
 
-
-module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser}
+const profile =async (req, res)=>{
+    try {
+         console.log(req.session.userId)
+        const userInfo = await User.findById(req.session.userId)
+        res.status(200).json({message: 'profile', userInfo}) 
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser, profile}
