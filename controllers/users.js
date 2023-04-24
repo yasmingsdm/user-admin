@@ -133,4 +133,13 @@ const deleteUser =async (req, res)=>{
         res.status(500).json({message: e.message})
     }
 }
-module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser, profile, deleteUser}
+
+const updateUser =async (req, res)=>{
+    try {
+        await User.findByIdAndUpdate(req.session.userId, {name: req.body.name, /* update image*/})
+        res.status(200).json({message: 'profile updated'}) 
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser, profile, deleteUser, updateUser}
