@@ -39,6 +39,10 @@ const userSchema = new Schema({
         data: Buffer,
         contentType: String
     }
+    // image:{
+    //     type:String,
+    //     default:'../public/images/default-user.jpg'
+    // }
 
 })
 

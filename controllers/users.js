@@ -90,6 +90,9 @@ const loginUser = async (req, res)=>{
         if(!alreadyAnUser){
             return  res.status(400).json({message: 'Sign up first'})
         }
+        if(alreadyAnUser.is_banned){
+            return  res.status(400).json({message: 'Banned user'})
+        }
         const checkPassword = await comparePassword(password, alreadyAnUser.password)
         if(!checkPassword){
             res.status(400).json({message: 'Wrong password'})
