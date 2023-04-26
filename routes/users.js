@@ -20,6 +20,6 @@ router.use(session({
   router.route('/')
   .get(loggedin, profile)
   .delete(loggedin, deleteUser)
-  .put(loggedin, updateUser)
+  .put(loggedin, formidable(), updateUser)
 
  module.exports = router
