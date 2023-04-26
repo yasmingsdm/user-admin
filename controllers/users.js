@@ -95,12 +95,7 @@ const loginUser = async (req, res)=>{
             res.status(400).json({message: 'Wrong password'})
         }
         req.session.userId = alreadyAnUser._id
-        res.status(200).json({
-            user:{
-                name: alreadyAnUser.name,
-                image: alreadyAnUser.image //it's empty
-            }, 
-            message: 'login ok'}) 
+        res.status(200).json({message: 'login ok'}) 
     } catch (e) {
         res.status(500).json({message: e.message})
     }
@@ -151,4 +146,61 @@ const updateUser =async (req, res)=>{
         res.status(500).json({message: e.message})
     }
 }
-module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser, profile, deleteUser, updateUser}
+
+const resetPassword = async (req, res)=>{
+    try {
+        const {email, password /* it is the new password*/} = req.body
+        if(!email || !password){
+            return  res.status(404).json({message: 'Some information is missing'})
+        }
+        if(password.length < 8){
+            return  res.status(400).json({message: 'Your password must have at least 8 characteres'})
+        }
+        const alreadyAnUser = await User.findOne({email})
+        if(!alreadyAnUser){
+            return  res.status(400).json({message: 'Sign up first'})
+        }
+      
+        const hashedPassword = await hashingPassword(password)
+
+         const token = jwt.sign({  email, hashedPassword }, dev.jwtKey, {expiresIn: '1h'});
+
+         const emailData = {
+             email,
+             subject: "Update Password",
+             html: `
+             <h2> Hello ${alreadyAnUser.name} . </h2>
+             <p> Please click <a href="${dev.clientUrl}/user/reset-password/${token}">here</a> to  reset your password </p>     
+             `, // html body
+           };
+        
+         sendEmailWithNodeMailer(emailData)
+
+        res.status(200).json({token, message: 'Please verify your email to reset your password'})
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+
+const VerifyPassword = (req, res)=>{
+    try {
+        const {token} = req.body
+        if(!token){
+            return res.status(404).json({message: 'Token missing'})
+       }
+       jwt.verify(token, dev.jwtKey, async function(err, decoded) {
+            if(err){
+                return res.status(401).json({message: 'Token expired'})
+            }
+        const {email, hashedPassword} = decoded
+        const updatedUser = await User.updateOne({email}, {$set:{password: hashedPassword}})
+        if(!updatedUser){
+            res.status(400).json({message: 'Error to update password'}) 
+        }
+           res.status(200).json({message: 'password changed ok'})
+       });   
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser, profile, deleteUser, updateUser, resetPassword, VerifyPassword}
