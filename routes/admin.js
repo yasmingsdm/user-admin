@@ -2,7 +2,7 @@ const session = require('express-session')
 const formidable = require('express-formidable')
 const dev = require('../config/config')
 const { loggedin, loggedout, isAdmin } = require('../middlewares/auth')
-const { loginAdmin, logoutAdmin, getAllUsers, deleteUser } = require('../controllers/admin')
+const { loginAdmin, logoutAdmin, getAllUsers, deleteUser, exportExcel } = require('../controllers/admin')
 
 const router = require('express').Router()
 
@@ -18,5 +18,6 @@ router.use(session({
   router.get('/logout', loggedin, logoutAdmin)
   router.get('/dashboard/all-users', loggedin, isAdmin, getAllUsers)
   router.delete('/dashboard/:id',loggedin, isAdmin,deleteUser)
+  router.get('/dashboard/excel', loggedin, isAdmin, exportExcel)
 
  module.exports = router
