@@ -65,7 +65,7 @@ const VerifyEmail = (req, res)=>{
              const newUser = new User({
                 name, email, password: hashedPassword, image
              })
-            if(image){ //it's not sending the image to the db
+            if(image){ 
                 newUser.image.data = fs.readFileSync(image.path);
                 newUser.image.contentType = image.type 
             }
@@ -136,8 +136,17 @@ const deleteUser =async (req, res)=>{
 
 const updateUser =async (req, res)=>{
     try {
-        await User.findByIdAndUpdate(req.session.userId, {name: req.body.name, /* update image*/})
-        res.status(200).json({message: 'profile updated'}) 
+       const updatedUser =  await User.findByIdAndUpdate(req.session.userId, {name: req.fields.name},{new:true})
+    if(!updatedUser){
+        res.status(400).json({message: 'Error to update profile'}) 
+    }
+    if(req.files.image){
+        const {image} = req.files
+        updatedUser.image.data = fs.readFileSync(image.path);
+        updatedUser.image.contentType = image.type 
+    }
+    await updatedUser.save()
+       res.status(200).json({message: 'profile updated'}) 
     } catch (e) {
         res.status(500).json({message: e.message})
     }
