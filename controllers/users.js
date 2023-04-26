@@ -104,7 +104,7 @@ const loginUser = async (req, res)=>{
 const logoutUser = (req, res)=>{
     try {
         req.session.destroy()
-        res.clearCookie('user session')
+        res.clearCookie('user_session')
         res.status(200).json({message: 'logout ok'}) 
     } catch (e) {
         res.status(500).json({message: e.message})
@@ -203,4 +203,5 @@ const VerifyPassword = (req, res)=>{
         res.status(500).json({message: e.message})
     }
 }
+
 module.exports = {signUpUser, VerifyEmail, loginUser, logoutUser, profile, deleteUser, updateUser, resetPassword, VerifyPassword}
