@@ -1,6 +1,7 @@
 
 const {comparePassword } = require("../helpers/hashPassword")
 const User = require("../models/users")
+const excel = require("exceljs");
 
 
 const loginAdmin = async (req, res)=>{
@@ -58,4 +59,44 @@ const deleteUser = async(req, res)=>{
 }
 
 
-module.exports = {loginAdmin, logoutAdmin, getAllUsers, deleteUser}
+const exportExcel = async(req, res)=>{
+    try {
+        let workbook = new excel.Workbook();
+        let worksheet = workbook.addWorksheet("Users");
+
+        worksheet.columns = [
+        { header: "Id", key: "id" },
+        { header: "Name", key: "name" },
+        { header: "Email", key: "email" },
+        { header: "is_admin", key: "is_admin"},
+        { header: "is_banned", key: "is_banned"},
+        { header: "image", key: "image"},
+        ];
+
+        const userData = await User.find({is_admin: 0})
+        userData.map(user=>{
+            worksheet.addRows(user)
+        })
+
+        worksheet.getRow(1).eachCell(cell=>{
+            cell.font = {bold: true}
+        })
+
+        // res is a Stream object
+        res.setHeader(
+        "Content-Type",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        );
+        res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=" + "users.xlsx")
+        return workbook.xlsx.write(res).then(function () {
+            res.status(200).end();
+        });
+    } catch (e) {
+        res.status(500).json({message: e.message})
+    }
+}
+
+
+module.exports = {loginAdmin, logoutAdmin, getAllUsers, deleteUser, exportExcel}
